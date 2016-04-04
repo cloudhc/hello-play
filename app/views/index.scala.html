@@ -1,0 +1,120 @@
+@(message: String)
+
+@main("Google Map by CoffeeScript!") {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8"><div id="map"></div></div>
+            <div class="col-md-4"><div id="Nwagon"></div></div>
+        </div>
+        <div class="row">
+            <button id="all">All Points</button>
+            <button id="school">Show School</button>
+            <input id="address" type="textbox" value="수원시 영통구 매탄동">
+            <button id="transform">Move to</button>
+            <select id="category">
+                <option value="Movie">영화</option>
+                <option value="Book">도서</option>
+                <option value="Concert">공연</option>
+                <option value="Lecture">강연</option>
+                <option value="Travel" selected>여행</option>
+            </select>
+            <input id="location" type="textbox" value="오대산">
+            <button id="nearBySearch">Find</button>
+            <button id="clear">Clear</button>
+        </div>
+        <div class="row">
+            <div id="results"></div>
+        </div>
+        
+        <script type="text/javascript">
+            var GSSurl = "https://spreadsheets.google.com/feeds/list/1n3uci3ucTqJOA1nIDO90ihfPPJkpM6JQRSdwZdLN6aQ/5/public/basic?alt=json-in-script&callback=?";
+            $.getJSON(GSSurl,function(data){
+            	var entry=data.feed.entry;//구글 스프레드 시트의 모든 내용은 feed.entry에 담겨있습니다.
+            
+            	for(var i in entry){ // 각 행에대해 아래 스크립트를 실행합니다.
+            		$("#result").append(entry[i].title.$t);// .title.$t 에는 1행의 내용이 들어있습니다.
+            		$("#result").append(entry[i].content.$t);// .content.$t 에는 나머지행의 데이터가 header정보와 함께 들어있습니다.
+            		console.log(entry[i].content.$t);
+            	}
+            });
+        </script>
+        
+        <script type="text/javascript">
+        	var options = {
+        		'legend':{
+        			names: [['A-a'], ['B-a', 'B-b', 'B-c'], ['C-a',  'C-b', 'C-c', 'C-d']]
+        		},
+        		'dataset': {
+        			title: 'Web accessibility status',
+        			values: [[60], [50, 100, 67], [90, 70, 44, 88]],
+        			colorset: ['#2EB400', '#2BC8C9', "#666666"],
+        			fields: ['A', 'B', 'C'],
+        			opacity:[0.3, 0.5, 0.7, 0.9]
+        		},
+        		'core_circle_value' : ['72.7%'],
+        		'core_circle_radius':30,
+        		'maxValue' : 100,
+        		'increment' : 20,
+        		'chartDiv': 'Nwagon',
+        		'chartType': 'polar',
+        		'chartSize': {width:300, height:400}
+        	};
+        	Nwagon.chart(options);
+        </script>
+        
+        <div class="row">
+            <iframe id="travelList" src="https://spreadsheets.google.com/tq?tqx=out:html&tq=SELECT B,C,D,E,F,G WHERE G CONTAINS '월정사'&key=1n3uci3ucTqJOA1nIDO90ihfPPJkpM6JQRSdwZdLN6aQ&gid=1432675087" width=100%></iframe>
+        </div>
+        
+        <div class="row">
+            <div id="container" style="max-width: 1000px"></div>
+        </div>
+        
+        <input type="submit" id="byBtn" value="Change" onclick="change()"/>
+        
+        <div class="row" style="overflow-x:scroll;">
+            <div id="data" class="table-responsive" ></div>
+        </div>
+
+        <script>
+            // $(function () {
+                $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=world-population-density.json&callback=?', function (data) {
+            
+                    // Initiate the chart
+                    $('#container').highcharts('Map', {
+            
+                        title : {
+                            text : 'Zoom in on country by double click'
+                        },
+            
+                        mapNavigation: {
+                            enabled: true,
+                            enableDoubleClickZoomTo: true
+                        },
+            
+                        colorAxis: {
+                            min: 1,
+                            max: 1000,
+                            type: 'logarithmic'
+                        },
+            
+                        series : [{
+                            data : data,
+                            mapData: Highcharts.maps['custom/world'],
+                            joinBy: ['iso-a2', 'code'],
+                            name: 'Population density',
+                            states: {
+                                hover: {
+                                    color: '#BADA55'
+                                }
+                            },
+                            tooltip: {
+                                valueSuffix: '/km²'
+                            }
+                        }]
+                    });
+                });
+            // });
+        </script>
+    </div>
+}
